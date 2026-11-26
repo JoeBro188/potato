@@ -1,0 +1,846 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Potato</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🥔</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* potato palette (from the original site) */
+  --paper:#fbf6ec; --cream:#f3e9d6; --sand:#e8d8bb;
+  --ink:#24180f; --ink-2:#5b4733; --ink-3:#8a7560;
+  --soil:#21160d; --soil-2:#2f2116; --bark:#6b4a2c; --bark-2:#57391f;
+  --gold:#d9a23b; --gold-2:#f0c56a; --skin:#b08454; --leaf:#5c7a35; --red:#a8423a; --purple:#5a3260;
+  --line:rgba(36,24,15,.14); --line-dark:rgba(251,246,236,.16);
+  --radius:22px;
+  --shadow:0 1px 2px rgba(36,24,15,.06),0 12px 40px -12px rgba(36,24,15,.25);
+  /* v3 layout tokens, re-mapped onto the potato palette */
+  --font:"Inter",-apple-system,"Helvetica Neue",Arial,sans-serif;
+  --serif:"Fraunces",Georgia,serif;
+  --bg:var(--paper); --bg-alt:var(--cream); --bg-edu:var(--sand); --bg-dark:var(--soil);
+  --text:var(--ink); --text-dark:var(--paper); --text-muted:var(--ink-3); --text-footer:var(--ink-2);
+  --link:var(--bark); --accent:var(--bark); --accent-hover:var(--bark-2); --accent-dark:var(--gold);
+  --radius-pill:980px; --gutter:12px; --content:980px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:17px;line-height:1.47;letter-spacing:-.016em;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+img{display:block;max-width:100%}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+h1,h2,h3{font-family:var(--serif);font-optical-sizing:auto}
+h1 em,h2 em,h3 em{font-style:italic;font-weight:400;color:var(--bark)}
+.dark h1 em,.dark h2 em,.dark h3 em{color:var(--gold-2)}
+
+/* edu bar */
+.edu{background:var(--bg-edu);height:40px;font-size:12px;color:var(--ink-2)}
+.edu .in{max-width:var(--content);margin:0 auto;height:100%;display:flex;align-items:center;gap:8px}
+.edu .sep{color:var(--ink-3)}
+.edu i{font-style:italic}
+
+/* nav */
+.gnav{background:var(--paper);height:44px;position:sticky;top:0;z-index:50;border-bottom:1px solid var(--line)}
+.gnav ul{list-style:none;max-width:var(--content);margin:0 auto;height:100%;display:flex;justify-content:space-between;align-items:center;padding:0 8px}
+.gnav a{font-size:12px;color:var(--ink-2);transition:color .2s}
+.gnav a:hover,.gnav a.active{color:var(--ink)}
+.gnav a.active{font-weight:600}
+.gnav .logo{font-size:17px;line-height:1}
+.gnav button:hover{opacity:.6}
+
+/* promo banner */
+.promo{background:var(--paper);height:52px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.promo a{color:var(--link);margin-left:4px;font-weight:500}
+
+/* buttons */
+.ctas{display:flex;justify-content:center;gap:17px;margin-top:16px}
+.btn{display:inline-flex;align-items:center;justify-content:center;font-size:17px;padding:11px 21px;border-radius:var(--radius-pill);line-height:1.17;border:1px solid var(--accent);transition:background-color .2s,color .2s,border-color .2s}
+.btn-primary{background:var(--accent);color:var(--paper)}
+.btn-primary:hover{background:var(--accent-hover);border-color:var(--accent-hover)}
+.btn-secondary{color:var(--accent)}
+.btn-secondary:hover{background:var(--accent);color:var(--paper)}
+.dark .btn-primary{background:var(--accent-dark);border-color:var(--accent-dark);color:var(--soil)}
+.dark .btn-primary:hover{background:var(--gold-2);border-color:var(--gold-2)}
+.dark .btn-secondary{color:var(--accent-dark);border-color:var(--accent-dark)}
+.dark .btn-secondary:hover{background:var(--accent-dark);color:var(--soil)}
+.sm .ctas{gap:14px;margin-top:14px}
+.sm .btn{font-size:14px;padding:8px 15px}
+a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:6px}
+
+/* heroes */
+.hero{height:692px;position:relative;overflow:hidden;text-align:center;margin-bottom:var(--gutter);background:var(--bg)}
+.hero.dark{background:var(--bg-dark);color:var(--text-dark)}
+.hero .copy{position:relative;z-index:2;padding-top:58px}
+.hero h1,.hero h2{font-size:56px;line-height:1.07;font-weight:600;letter-spacing:-.02em}
+.hero .sub{font-size:28px;line-height:1.14;letter-spacing:-.005em;margin-top:6px}
+.hero .sub.sci{font-family:var(--serif);font-style:italic;color:var(--ink-2)}
+
+/* hero 1: 3D potato stage */
+.stage-wrap{position:absolute;left:50%;top:262px;transform:translateX(-50%);width:min(760px,100%);height:430px}
+#stage{position:absolute;inset:0;cursor:grab}
+#stage:active{cursor:grabbing}
+#stage canvas{display:block;width:100%!important;height:100%!important}
+.loader{position:absolute;inset:0;display:grid;place-items:center;font-size:14px;color:var(--ink-3);transition:opacity .6s;pointer-events:none}
+.loader i{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--gold);margin-right:8px;animation:pulse 1s infinite alternate}
+.loader.done{opacity:0}
+@keyframes pulse{to{transform:scale(1.6);opacity:.4}}
+.hud{position:absolute;left:50%;bottom:40px;transform:translateX(-50%);display:flex;gap:10px;z-index:3}
+.pill{display:flex;gap:2px;background:rgba(251,246,236,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:var(--radius-pill);padding:4px;box-shadow:var(--shadow)}
+.pill button{font-size:12px;font-weight:500;color:var(--ink-2);padding:6px 12px;border-radius:var(--radius-pill);display:flex;align-items:center;gap:6px;transition:background .2s,color .2s}
+.pill button:hover{color:var(--ink)}
+.pill button.on{background:var(--ink);color:var(--paper)}
+.sw{width:10px;height:10px;border-radius:50%;display:inline-block;box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}
+.dial{position:absolute;right:20px;top:20px;width:70px;height:70px;display:grid;place-items:center;font-size:11px;color:var(--ink-3)}
+.dial svg{position:absolute;inset:0}
+.dial b{display:block;font-size:14px;color:var(--ink);text-align:center}
+.hint{position:absolute;left:20px;top:28px;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink-3)}
+.variety-note{position:absolute;left:0;right:0;bottom:12px;font-size:13px;color:var(--ink-2);transition:opacity .2s;font-style:italic;font-family:var(--serif)}
+
+/* hero 2: anatomy */
+.anatomy{position:absolute;left:50%;top:272px;transform:translateX(-50%);width:560px;max-width:92%}
+.anatomy svg{width:100%;height:auto;overflow:visible}
+.anatomy text{font:600 13px var(--font);fill:var(--paper)}
+.anatomy text.sl{font-weight:400;fill:var(--sand);opacity:.8}
+
+/* hero 3: potassium dials */
+.dials{display:flex;justify-content:center;gap:70px;margin-top:34px}
+.kdial{width:250px;height:250px;border-radius:50%;position:relative;display:grid;place-items:center;
+  background:conic-gradient(var(--c) calc(var(--p) * 1%),rgba(251,246,236,.1) 0);box-shadow:0 0 60px -10px var(--glow)}
+.kdial::before{content:"";position:absolute;inset:14px;border-radius:50%;background:radial-gradient(circle at 50% 35%,var(--soil-2),var(--soil) 70%)}
+.kdial div{position:relative;text-align:center}
+.kdial .em{font-size:34px;display:block}
+.kdial b{font-family:var(--serif);font-size:64px;line-height:1;font-weight:600;display:block;letter-spacing:-.02em}
+.kdial small{font-size:12px;color:var(--sand);letter-spacing:.06em;text-transform:uppercase}
+.kdial .who{font-size:15px;color:var(--paper);display:block;margin-top:6px}
+.dial-tag{font-size:24px;margin-top:34px;font-weight:500}
+.dial-tag + .ctas{margin-top:18px}
+
+/* tiles */
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:var(--gutter);padding:0 var(--gutter);margin-bottom:var(--gutter)}
+.tile{height:580px;background:var(--bg-alt);position:relative;overflow:hidden;text-align:center}
+.tile.dark{background:var(--bg-dark);color:var(--text-dark)}
+.tile .copy{position:relative;z-index:2;padding-top:52px;padding-left:24px;padding-right:24px}
+.tile h3{font-size:40px;line-height:1.1;font-weight:600;letter-spacing:-.015em}
+.tile .sub{font-size:21px;line-height:1.19;margin-top:6px;max-width:460px;margin-left:auto;margin-right:auto}
+
+/* tile: varieties collage */
+.vtile{background:var(--bark);color:var(--paper)}
+.vtile h3 em{color:var(--gold-2)}
+.vtile .btn-primary{background:var(--gold);border-color:var(--gold);color:var(--soil)}
+.vtile .collage{position:absolute;top:0;left:0;right:0;height:320px;display:flex}
+.vtile .stripes{flex:0 0 40%;background:repeating-linear-gradient(90deg,#a87a4a 0 22px,#dcb86e 22px 40px,#9c3b33 40px 56px,#4b2a4f 56px 70px,#c99a5c 70px 92px,#d6b88a 92px 108px,#cfa877 108px 126px,#e3b84b 126px 146px)}
+.vtile .squares{flex:0 0 19%;display:flex;flex-direction:column}
+.vtile .squares div{flex:1;display:grid;place-items:center}
+.vtile .sq1{background:var(--gold)}
+.vtile .sq2{background:var(--paper)}
+.vtile .rest{flex:1;background:var(--gold-2);position:relative}
+.blob{display:block;border-radius:48% 52% 45% 55%/58% 46% 54% 42%;box-shadow:inset -10px -12px 0 rgba(0,0,0,.12),inset 8px 8px 0 rgba(255,255,255,.12)}
+.blob::after{content:"";display:block;width:8px;height:5px;border-radius:50%;background:rgba(0,0,0,.25);margin:30% 0 0 62%}
+.vtile .rest .blob{position:absolute;left:50%;top:50%;width:62%;height:62%;transform:translate(-50%,-50%) rotate(-18deg)}
+.vtile .copy{position:absolute;left:0;right:0;top:372px;padding-top:0}
+.vtile .sub{font-size:17px}
+
+/* tile: fries */
+.fries-img{position:absolute;left:50%;top:210px;transform:translateX(-50%);width:640px;height:370px;object-fit:cover;object-position:50% 60%;
+  -webkit-mask-image:radial-gradient(ellipse 50% 52% at 50% 55%,#000 50%,transparent 100%);mask-image:radial-gradient(ellipse 50% 52% at 50% 55%,#000 50%,transparent 100%)}
+.temp-text{background:linear-gradient(90deg,var(--gold-2),var(--gold) 45%,var(--red));-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:600}
+
+/* tile: history timeline */
+.tline{position:absolute;left:50%;top:270px;transform:translateX(-50%);width:820px;max-width:94%}
+.tline svg{width:100%;height:auto;overflow:visible}
+.tline text{font:600 13px var(--font);fill:var(--ink)}
+.tline text.y{font:600 20px var(--serif);fill:var(--bark)}
+.tline text.s{font-weight:400;fill:var(--ink-3);font-size:12px}
+
+/* tile: storage */
+.store{position:absolute;left:50%;top:300px;transform:translateX(-50%);width:760px;max-width:92%}
+.scale{position:relative;height:56px;border-radius:14px;overflow:hidden;display:flex;font-size:12px;font-weight:600;box-shadow:var(--shadow)}
+.scale div{display:grid;place-items:center;padding:0 10px}
+.scale .cold{flex:2;background:linear-gradient(90deg,#c7d6dc,#e5ecee);color:var(--ink-2)}
+.scale .sweet{flex:1.1;background:var(--leaf);color:var(--paper)}
+.scale .warm{flex:2.6;background:linear-gradient(90deg,var(--gold-2),var(--gold));color:var(--soil)}
+.ticks{display:flex;justify-content:space-between;font-size:11px;color:var(--ink-3);margin-top:8px;padding:0 4px}
+.chips{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:34px}
+.chip{background:var(--paper);border-radius:16px;padding:16px 10px;box-shadow:var(--shadow);font-size:13px;font-weight:600}
+.chip span{display:block;font-size:28px;margin-bottom:6px}
+.chip small{display:block;font-weight:400;color:var(--ink-3);font-size:11px;margin-top:2px}
+
+/* tile: world bars */
+.bars{position:absolute;left:50%;top:296px;transform:translateX(-50%);width:620px;max-width:90%;text-align:left}
+.hbar{display:grid;grid-template-columns:96px 1fr 44px;align-items:center;gap:12px;font-size:13px;margin-bottom:12px}
+.hbar .t{height:14px;border-radius:7px;background:var(--sand);overflow:hidden}
+.hbar .t div{height:100%;border-radius:7px;background:linear-gradient(90deg,var(--bark),var(--gold));width:0;transition:width 1.2s cubic-bezier(.2,.7,.2,1)}
+.hbar b{font-variant-numeric:tabular-nums;text-align:right}
+.bars .src{font-size:11px;color:var(--ink-3);margin-top:10px;text-align:center}
+
+/* tile: facts */
+.flips{position:absolute;left:50%;top:330px;transform:translateX(-50%);display:flex;gap:16px;width:820px;max-width:94%}
+.flip{flex:1;height:200px;perspective:900px;cursor:pointer;font:inherit;color:inherit;text-align:left}
+.flip .in{display:block;position:relative;width:100%;height:100%;transition:transform .6s cubic-bezier(.3,.7,.3,1);transform-style:preserve-3d}
+.flip.on .in{transform:rotateY(180deg)}
+.flip .f,.flip .b{position:absolute;inset:0;border-radius:18px;padding:18px;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;justify-content:space-between;text-align:left;box-shadow:var(--shadow)}
+.flip .f{background:var(--paper)}
+.flip .f .n{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.flip .f .h{display:block;font-family:var(--serif);font-size:20px;line-height:1.15;font-weight:600}
+.flip .f small{font-size:11px;color:var(--bark)}
+.flip .b{background:var(--soil);color:var(--paper);transform:rotateY(180deg);font-size:13px;line-height:1.45;justify-content:center}
+
+/* carousel: six ways to glory */
+.tv{overflow:hidden;background:var(--paper)}
+.tv-track{--w:1250px;display:flex;gap:var(--gutter);height:666px;transform:translateX(calc((100vw - var(--w)) / 2 - var(--w) - var(--gutter)))}
+.tv-track.moving{transition:transform .9s cubic-bezier(.4,0,.2,1);transform:translateX(calc((100vw - var(--w)) / 2 - 2 * var(--w) - 2 * var(--gutter)))}
+.tv-item{flex:0 0 var(--w);position:relative;overflow:hidden;background:var(--soil)}
+.tv-item img{width:100%;height:100%;object-fit:cover;filter:saturate(1.05) brightness(.82)}
+.tv-item .shade{position:absolute;inset:0;background:linear-gradient(0deg,rgba(33,22,13,.75),transparent 40%),linear-gradient(270deg,rgba(33,22,13,.55),transparent 55%)}
+.tv-logo{position:absolute;right:75px;top:66px;color:var(--paper);font-size:14px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;display:flex;align-items:center;gap:8px}
+.tv-title{position:absolute;right:75px;top:220px;color:var(--paper);font-family:var(--serif);font-weight:700;line-height:.95;font-size:150px;letter-spacing:-.04em;text-align:right}
+.tv-title small{display:block;font-size:40px;font-style:italic;font-weight:400;letter-spacing:-.01em;color:var(--gold-2);margin-bottom:6px}
+.tv-cta{position:absolute;left:70px;right:70px;bottom:60px;display:flex;align-items:center;gap:18px;color:var(--paper);font-size:17px}
+.tv-cta .btn{background:var(--paper);color:var(--ink);border-color:var(--paper);white-space:nowrap}
+.tv-cta .btn:hover{background:var(--sand)}
+.tv-cta span{max-width:640px}
+.dots{display:flex;justify-content:center;align-items:center;gap:16px;height:50px;position:relative}
+.dots button.d{width:8px;height:8px;border-radius:4px;background:var(--ink-3);transition:width .4s,background .4s;padding:0}
+.dots button.d.on{width:32px;background:var(--ink)}
+.dots .play{position:absolute;right:13px;width:24px;height:24px;border-radius:50%;background:var(--sand);display:flex;align-items:center;justify-content:center}
+
+/* footer */
+footer{background:var(--bg-alt);font-size:12px;line-height:1.33;color:var(--text-muted);letter-spacing:-.01em}
+footer .in{max-width:var(--content);margin:0 auto;padding:17px 0 21px}
+.notes p{margin-bottom:12px}
+.notes b{color:var(--ink-2)}
+.directory{display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid var(--line);padding-top:20px;margin-top:20px}
+.directory h4{font-size:12px;font-weight:600;color:var(--text);margin-bottom:10px}
+.directory ul{list-style:none;margin-bottom:24px}
+.directory li{margin-bottom:10px;color:var(--text-footer)}
+.directory li a:hover,.legal a:hover,.promo a:hover,.more a:hover{text-decoration:underline}
+.more{padding:20px 0 16px;border-bottom:1px solid var(--line)}
+.more a{color:var(--link);text-decoration:underline}
+.legal{display:flex;justify-content:space-between;padding-top:16px}
+.legal-links{margin-top:6px}
+.legal-links a{color:var(--text-footer);padding:0 8px;border-left:1px solid var(--line)}
+.legal-links a:first-child{padding-left:0;border:0}
+.menu-btn{display:none}
+
+/* ---- responsive (potato breakpoints: 980px / 640px) ---- */
+@media (max-width:980px){
+  .gnav ul{padding:0 16px;justify-content:flex-start;gap:20px}
+  .gnav li.item{display:none}
+  .gnav li:first-child{margin-right:auto}
+  .menu-btn{display:block}
+  .edu .in,footer .in{padding-left:16px;padding-right:16px}
+  .tv-track{--w:calc(100vw - 120px)}
+  .tv-title{font-size:96px}
+}
+@media (max-width:640px){
+  .promo{height:auto;padding:14px 16px;text-align:center;font-size:12px;display:block}
+  .hero{height:auto;min-height:600px;padding-bottom:30px}
+  .hero h1,.hero h2{font-size:38px}
+  .hero .sub{font-size:20px;padding:0 16px}
+  .hero .copy{padding-top:44px}
+  .btn{font-size:14px;padding:8px 15px}
+  #top{height:680px}
+  .stage-wrap{top:230px;height:450px}
+  .hint,.dial{display:none}
+  .hud{flex-direction:column;align-items:center;gap:8px;bottom:34px}
+  .variety-note{bottom:4px;padding:0 16px}
+  .anatomy{position:relative;left:auto;top:auto;transform:none;margin:36px auto 0;max-width:calc(100% - 32px)}
+  .anatomy text{font-size:17px}
+  .dials{gap:16px;margin-top:28px;padding:0 16px}
+  .kdial{width:150px;height:150px}
+  .kdial::before{inset:9px}
+  .kdial b{font-size:38px}
+  .kdial .em{font-size:22px}
+  .kdial .who{font-size:12px}
+  .dial-tag{font-size:17px;padding:0 24px}
+  .tiles{grid-template-columns:1fr;padding:0}
+  .tile{height:auto;min-height:540px;padding-bottom:30px}
+  .tile h3{font-size:32px}
+  .tile .sub{font-size:17px}
+  .vtile{height:560px}
+  .vtile .copy{top:340px}
+  .vtile .collage{height:300px}
+  .fries-img{width:100%;height:300px;top:auto;bottom:0}
+  .tline,.store,.bars,.flips{position:relative;left:auto;top:auto;transform:none;margin:30px auto 0}
+  .tline{width:calc(100% - 24px);overflow-x:auto}
+  .tline text.y{font-size:30px}
+  .tline text.s{display:none}
+  .kdial .who{display:none}
+  .chips{grid-template-columns:repeat(2,1fr)}
+  .scale{font-size:10px}
+  .hbar{grid-template-columns:80px 1fr 40px}
+  .flips{flex-direction:column;max-width:calc(100% - 48px)}
+  .flip{flex:none;height:140px}
+  .tv-track{height:520px;--w:calc(100vw - 48px)}
+  .tv-title{font-size:64px;right:20px;top:auto;bottom:170px}
+  .tv-title small{font-size:22px}
+  .tv-logo{right:20px;top:20px;font-size:11px}
+  .tv-cta{left:20px;right:20px;bottom:24px;flex-direction:column;align-items:flex-start;gap:10px;font-size:13px}
+  .directory{grid-template-columns:1fr;padding-top:0}
+  .directory > div > ul{display:none}
+  .directory h4{padding:12px 0;margin:0;border-bottom:1px solid var(--line);position:relative;cursor:pointer}
+  .directory h4::after{content:"+";position:absolute;right:0;font-weight:400}
+  .directory h4.open::after{content:"−"}
+  .directory h4.open + ul{display:block;padding:10px 0 0;margin-bottom:10px}
+  .legal{flex-direction:column-reverse;gap:8px}
+  .legal-links a{display:inline-block;margin-bottom:4px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+
+<div class="edu"><div class="in"><span><i>Solanum tuberosum</i> L. — a field guide</span><span class="sep">|</span><a href="#top">Back to the potato</a></div></div>
+
+<header>
+<nav class="gnav" aria-label="Sections">
+  <ul>
+    <li><a class="logo" href="#top" aria-label="The Potato — top">🥔</a></li>
+    <li class="item"><a href="#botany">Botany</a></li>
+    <li class="item"><a href="#nutrition">Nutrition</a></li>
+    <li class="item"><a href="#varieties">Varieties</a></li>
+    <li class="item"><a href="#history">History</a></li>
+    <li class="item"><a href="#cooking">Cooking</a></li>
+    <li class="item"><a href="#world">World</a></li>
+    <li class="item"><a href="#facts">Facts</a></li>
+    <li class="item"><a href="#storage">Storage</a></li>
+    <li><button aria-label="Search"><svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="6" cy="6" r="5"/><path d="M9.7 9.7 14 14"/></svg></button></li>
+    <li class="menu-btn"><button aria-label="Menu"><svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M1 3h14M1 9h14"/></svg></button></li>
+  </ul>
+</nav>
+</header>
+
+<div class="promo">May 30 is International Day of Potato, first observed by the UN in 2024.<a href="#world">Learn more ›</a></div>
+
+<main>
+  <!-- HERO 1: the 3D potato -->
+  <section class="hero" id="top">
+    <div class="copy">
+      <h1>Behold, <em>The Potato.</em></h1>
+      <p class="sub sci">Solanum tuberosum L. — Solanaceae</p>
+      <div class="ctas"><a class="btn btn-primary" href="#botany">Learn more</a><a class="btn btn-secondary" href="#varieties">Varieties</a></div>
+    </div>
+    <div class="stage-wrap">
+      <div id="stage" aria-label="Interactive 3D potato. Drag to rotate." role="img"></div>
+      <div class="loader" id="loader"><div><i></i>Growing your potato…</div></div>
+      <div class="hint"><svg width="34" height="14" viewBox="0 0 34 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 1 7l5 5M28 2l5 5-5 5M1 7h32"/></svg>Drag to rotate 360°</div>
+      <div class="dial">
+        <svg viewBox="0 0 86 86"><circle cx="43" cy="43" r="38" fill="none" stroke="rgba(36,24,15,.12)" stroke-width="3"/><circle id="dialArc" cx="43" cy="43" r="38" fill="none" stroke="#6b4a2c" stroke-width="3" stroke-linecap="round" stroke-dasharray="238.76" stroke-dashoffset="238.76" transform="rotate(-90 43 43)"/></svg>
+        <div><b id="deg">0°</b><small>azimuth</small></div>
+      </div>
+      <div class="variety-note" id="vnote">Russet — netted, earthy, built for baking.</div>
+      <div class="hud">
+        <div class="pill" id="varPick">
+          <button class="on" data-v="russet"><i class="sw" style="background:#a87a4a"></i>Russet</button>
+          <button data-v="gold"><i class="sw" style="background:#dcb86e"></i>Gold</button>
+          <button data-v="red"><i class="sw" style="background:#9c3b33"></i>Red</button>
+          <button data-v="purple"><i class="sw" style="background:#4b2a4f"></i>Purple</button>
+        </div>
+        <div class="pill">
+          <button id="spinBtn" class="on" title="Auto-rotate">↻ Spin</button>
+          <button id="zin" title="Zoom in" aria-label="Zoom in">＋</button>
+          <button id="zout" title="Zoom out" aria-label="Zoom out">－</button>
+          <button id="resetBtn" title="Reset view" aria-label="Reset view">⟲</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HERO 2: botany -->
+  <section class="hero dark" id="botany">
+    <div class="copy">
+      <h2>Not a root. <em>A swollen stem.</em></h2>
+      <p class="sub">An underground stem packed with starch.</p>
+      <div class="ctas"><a class="btn btn-primary" href="#botany-notes">Learn more</a><a class="btn btn-secondary" href="#nutrition">What’s inside</a></div>
+    </div>
+    <div class="anatomy">
+      <svg viewBox="0 0 520 380" role="img" aria-label="Cross-section of a potato tuber: skin, vascular ring, cortex, pith and an eye">
+        <defs>
+          <radialGradient id="flesh" cx="45%" cy="40%" r="65%"><stop offset="0" stop-color="#fbf0c8"/><stop offset="1" stop-color="#ecd58f"/></radialGradient>
+          <radialGradient id="pith" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#fff8dc"/><stop offset="1" stop-color="#f6e7b0"/></radialGradient>
+        </defs>
+        <path d="M70 190c0-80 70-130 170-132 110-2 190 40 196 120 6 86-80 138-190 140C140 320 70 270 70 190z" fill="#9a6c3e"/>
+        <path d="M80 190c0-74 66-121 160-123 104-2 180 37 186 112 5 80-76 128-180 130C146 311 80 264 80 190z" fill="url(#flesh)"/>
+        <path d="M112 190c0-58 54-94 130-96 84-2 146 29 150 88 4 62-60 100-146 102-82 2-134-36-134-94z" fill="none" stroke="#d8b867" stroke-width="2.5" stroke-dasharray="5 4"/>
+        <path d="M160 192c0-34 34-56 84-57 54-1 98 18 100 52 2 36-40 58-96 60-52 1-88-20-88-55z" fill="url(#pith)"/>
+        <path d="M190 192c30-6 70-6 120 2M220 170c20 12 40 30 50 48" stroke="#ead494" stroke-width="2" fill="none" opacity=".8"/>
+        <ellipse cx="410" cy="128" rx="9" ry="6" fill="#5a3b20"/>
+        <ellipse cx="110" cy="250" rx="8" ry="5" fill="#5a3b20"/>
+        <g stroke="#e8d8bb" stroke-width="1.2" fill="none" opacity=".8">
+          <path d="M76 150 30 110"/><path d="M118 190 30 205"/><path d="M200 120 180 40"/><path d="M250 190 300 30"/><path d="M412 130 470 70"/>
+        </g>
+        <g fill="#f0c56a"><circle cx="76" cy="150" r="3"/><circle cx="118" cy="190" r="3"/><circle cx="200" cy="120" r="3"/><circle cx="250" cy="190" r="3"/><circle cx="412" cy="130" r="3"/></g>
+        <text x="6" y="100">Skin</text><text x="6" y="114" class="sl">periderm</text>
+        <text x="6" y="222">Vascular ring</text><text x="6" y="236" class="sl">transport tissue</text>
+        <text x="140" y="26">Cortex</text><text x="140" y="40" class="sl">starch storage</text>
+        <text x="296" y="20">Pith</text><text x="330" y="20" class="sl">watery core</text>
+        <text x="440" y="56">Eye</text><text x="440" y="70" class="sl">bud node</text>
+        <text x="150" y="372" class="sl">≈ 79% water · 17% starch · 2% protein</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- HERO 3: nutrition -->
+  <section class="hero dark" id="nutrition">
+    <div class="copy">
+      <h2>More than <em>just carbs.</em></h2>
+      <div class="dials" role="img" aria-label="Potassium per medium serving: potato 926 milligrams, banana 422 milligrams">
+        <div class="kdial" style="--p:100;--c:var(--gold);--glow:rgba(217,162,59,.45)"><div><span class="em">🥔</span><b>926</b><small>mg potassium</small><span class="who">Potato · medium, baked</span></div></div>
+        <div class="kdial" style="--p:45.6;--c:var(--gold-2);--glow:rgba(240,197,106,.15)"><div><span class="em">🍌</span><b>422</b><small>mg potassium</small><span class="who">Banana · medium</span></div></div>
+      </div>
+      <p class="dial-tag">More potassium than a banana, with the skin on.</p>
+      <div class="ctas"><a class="btn btn-primary" href="#nutrition-notes">Learn more</a><a class="btn btn-secondary" href="#cooking">Cook one</a></div>
+    </div>
+  </section>
+
+  <!-- TILES -->
+  <section class="tiles sm" aria-label="Potato topics">
+    <div class="tile vtile" id="varieties">
+      <div class="collage" aria-hidden="true">
+        <div class="stripes"></div>
+        <div class="squares">
+          <div class="sq1"><span class="blob" style="width:96px;height:70px;background:#a87a4a;transform:rotate(-12deg)"></span></div>
+          <div class="sq2"><span class="blob" style="width:86px;height:64px;background:#9c3b33;transform:rotate(14deg)"></span></div>
+        </div>
+        <div class="rest"><span class="blob" style="background:#4b2a4f"></span></div>
+      </div>
+      <div class="copy"><h3>Pick <em>your potato.</em></h3><p class="sub">Starch decides almost everything: floury ones fluff, waxy ones hold their shape.</p><div class="ctas"><a class="btn btn-primary" href="#varieties-notes">Meet the varieties</a></div></div>
+    </div>
+
+    <div class="tile dark" id="fries">
+      <div class="copy"><h3>Fry it <em>twice.</em></h3><p class="sub"><span class="temp-text">325°F → 375°F</span></p><div class="ctas"><a class="btn btn-primary" href="#cooking">Get the method</a><a class="btn btn-secondary" href="#cooking">All methods</a></div></div>
+      <img class="fries-img" src="https://images.unsplash.com/photo-1630384060421-cb20d0e0649d?w=1400&q=80" alt="Golden fries in a wire basket" width="640" height="370">
+    </div>
+
+    <div class="tile" id="history">
+      <div class="copy"><h3>From the Andes <em>to everywhere.</em></h3><p class="sub">Domesticated near Lake Titicaca, now grown in more than 150 countries.</p><div class="ctas"><a class="btn btn-primary" href="#history-notes">Learn more</a><a class="btn btn-secondary" href="#world">Today</a></div></div>
+      <div class="tline">
+        <svg viewBox="-56 0 932 220" role="img" aria-label="Timeline: domestication in the Andes, Spain in the 1530s, Parmentier in the 1770s, the Irish famine 1845–1852, space in 1995, a global staple today">
+          <path d="M20 120C150 40 260 190 410 110S680 40 800 110" fill="none" stroke="var(--sand)" stroke-width="6" stroke-linecap="round"/>
+          <path d="M20 120C150 40 260 190 410 110S680 40 800 110" fill="none" stroke="var(--bark)" stroke-width="2" stroke-dasharray="2 8" stroke-linecap="round"/>
+          <g fill="var(--paper)" stroke="var(--bark)" stroke-width="3">
+            <circle cx="20" cy="120" r="9"/><circle cx="175" cy="96" r="9"/><circle cx="330" cy="140" r="9"/><circle cx="480" cy="88" r="9"/><circle cx="640" cy="68" r="9"/><circle cx="800" cy="110" r="9" fill="var(--gold)"/>
+          </g>
+          <text x="20" y="168" text-anchor="middle" class="y">~8000 BCE</text><text x="20" y="186" text-anchor="middle" class="s">Andes</text>
+          <text x="175" y="58" text-anchor="middle" class="y">1530s</text><text x="175" y="76" text-anchor="middle" class="s">Spain meets the papa</text>
+          <text x="330" y="188" text-anchor="middle" class="y">1770s</text><text x="330" y="206" text-anchor="middle" class="s">Parmentier’s PR stunt</text>
+          <text x="480" y="50" text-anchor="middle" class="y">1845–1852</text><text x="480" y="68" text-anchor="middle" class="s">The Great Famine</text>
+          <text x="640" y="30" text-anchor="middle" class="y">1995</text><text x="640" y="48" text-anchor="middle" class="s">First veg in space</text>
+          <text x="800" y="158" text-anchor="middle" class="y">Today</text><text x="800" y="176" text-anchor="middle" class="s">A global staple</text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="tile" id="storage">
+      <div class="copy"><h3>Keep them <em>cool, dark, calm.</em></h3><p class="sub">The sweet spot is 45–50°F (7–10°C).</p><div class="ctas"><a class="btn btn-primary" href="#storage-notes">Learn more</a></div></div>
+      <div class="store">
+        <div class="scale" role="img" aria-label="Storage temperature scale: fridge turns starch to sugar, 45 to 50 degrees Fahrenheit is ideal, warmer makes them sprout">
+          <div class="cold">Fridge · starch → sugar</div><div class="sweet">✓ 45–50°F</div><div class="warm">Kitchen counter · sprouts</div>
+        </div>
+        <div class="ticks"><span>35°F</span><span>45°F</span><span>55°F</span><span>65°F</span><span>75°F</span></div>
+        <div class="chips">
+          <div class="chip"><span>🌑</span>Dark<small>No light, no greening</small></div>
+          <div class="chip"><span>🌬️</span>Ventilated<small>Skip plastic bags</small></div>
+          <div class="chip"><span>🧅</span>Away from onions<small>They speed sprouting</small></div>
+          <div class="chip"><span>🚿</span>Don’t pre-wash<small>Moisture invites mold</small></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tile" id="world">
+      <div class="copy"><h3>A planet <em>powered by spuds.</em></h3><p class="sub">The third most-eaten food crop on Earth, after rice and wheat.</p><div class="ctas"><a class="btn btn-primary" href="#world-notes">Learn more</a><a class="btn btn-secondary" href="#world-notes">Dishes</a></div></div>
+      <div class="bars"><div id="bars"></div><p class="src">Top producers · million tonnes / year · FAOSTAT (2022), approximate</p></div>
+    </div>
+
+    <div class="tile" id="facts">
+      <div class="copy"><h3>Tap to <em>reveal.</em></h3><p class="sub">Twelve facts, from space shuttles to sweet-potato impostors.</p><div class="ctas"><button class="btn btn-primary" id="nextFacts">Shuffle facts</button></div></div>
+      <div class="flips" id="factsGrid"></div>
+    </div>
+  </section>
+
+  <!-- CAROUSEL: cooking -->
+  <section class="tv" id="cooking" aria-label="Six ways to glory: cooking methods">
+    <div class="tv-track" id="cookTrack"></div>
+    <div class="dots" role="tablist" id="cookDots">
+      <button class="play" aria-label="Play carousel"><svg width="8" height="9" viewBox="0 0 8 9"><path d="M0 0 8 4.5 0 9Z" fill="currentColor"/></svg></button>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="in">
+    <div class="notes">
+      <p id="nutrition-notes"><b>Nutrition.</b> With the skin on, a plain potato has more potassium than a banana, a solid hit of vitamin C and B6, and almost no fat. A medium baked potato (173 g) has about 161 calories. Values are approximate and based on USDA FoodData Central; fries reflect a typical fast-food preparation. Cooking then chilling potatoes turns some starch into <b>resistant starch</b>, which acts like fiber. Roughly half of the fiber sits in and just under the skin.</p>
+      <p id="botany-notes"><b>Botany.</b> A potato is a stem tuber: its “eyes” are nodes, each holding buds that can sprout an entirely new plant. Kingdom Plantae · Order Solanales · Family Solanaceae (nightshades) · Genus <i>Solanum</i> · Species <i>S. tuberosum</i>. Close relatives: tomato, eggplant, pepper. Origin: the Andes, southern Peru and northwestern Bolivia.</p>
+      <p><b>Green means stop.</b> Light-exposed potatoes make chlorophyll, which often signals rising solanine, a bitter glycoalkaloid. Cut away green patches and sprouts. The plant’s leaves, stems and little tomato-like berries are toxic.</p>
+      <p id="history-notes"><b>History.</b> <span id="tlText"></span></p>
+      <p id="world-notes"><b>World.</b> Potatoes produce more food per hectare than most grains. 1.3B people rely on them as a staple food, and ~85% of the plant is edible human food, compared with roughly half for cereals. Dishes: <span id="dishes"></span>.</p>
+      <p id="storage-notes"><b>Storage.</b> Stored cool, dark and ventilated, potatoes keep for weeks to months. Very cold storage turns starch into sugar, which can mean sweeter taste and darker browning when fried. Brush off dirt right before cooking.</p>
+    </div>
+    <nav class="directory" aria-label="Directory">
+      <div><h4>Botany</h4><ul><li><a href="#botany">Stem tuber</a></li><li><a href="#botany">Skin · periderm</a></li><li><a href="#botany">Vascular ring</a></li><li><a href="#botany">Cortex</a></li><li><a href="#botany">Pith</a></li><li><a href="#botany">Eyes</a></li></ul>
+        <h4>Nutrition</h4><ul><li><a href="#nutrition">Potato vs. Banana</a></li><li><a href="#nutrition-notes">Resistant starch</a></li><li><a href="#nutrition-notes">Eat the skin</a></li></ul></div>
+      <div><h4>Varieties</h4><ul id="varList"></ul></div>
+      <div><h4>History</h4><ul id="tlList"></ul></div>
+      <div><h4>Cooking</h4><ul id="cookList"></ul><h4>World</h4><ul><li><a href="#world">Top producers</a></li><li><a href="#world-notes">Potato dishes</a></li></ul></div>
+      <div><h4>Facts</h4><ul><li><a href="#facts">Tap to reveal</a></li></ul><h4>Storage</h4><ul><li><a href="#storage">Dark</a></li><li><a href="#storage">Ventilated</a></li><li><a href="#storage">Away from onions</a></li><li><a href="#storage">Don’t pre-wash</a></li><li><a href="#storage">The sweet spot</a></li></ul></div>
+    </nav>
+    <p class="more">Long live the potato. Made with starch &amp; WebGL. <a href="#top">↑ Back to the potato</a></p>
+    <div class="legal">
+      <div><p>The Potato — a field guide to <i>Solanum tuberosum</i>.</p>
+        <p class="legal-links"><a href="#botany">Botany</a><a href="#nutrition">Nutrition</a><a href="#varieties">Varieties</a><a href="#history">History</a><a href="#cooking">Cooking</a><a href="#storage">Storage</a></p></div>
+      <p>Data: USDA FoodData Central · FAOSTAT</p>
+    </div>
+  </div>
+</footer>
+
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}
+</script>
+
+<!-- ============ CONTENT (data arrays from the original potato site) ============ -->
+<script>
+const VARS=[
+  {n:'Russet Burbank',t:'Floury · USA',c:'#a87a4a',s:5},{n:'Yukon Gold',t:'All-purpose · Canada',c:'#dcb86e',s:3},
+  {n:'Red Bliss',t:'Waxy · USA',c:'#9c3b33',s:1},{n:'Purple Peruvian',t:'Floury · Andes',c:'#4b2a4f',s:4},
+  {n:'Fingerling',t:'Waxy · Heirloom',c:'#c99a5c',s:1},{n:'Maris Piper',t:'Floury · UK',c:'#d6b88a',s:4},
+  {n:'Kennebec',t:'All-purpose · USA',c:'#cfa877',s:4},{n:'Papa Amarilla',t:'Floury · Peru',c:'#e3b84b',s:5}
+];
+const TL=[
+  ['~8000–5000 BCE','Andes','First domestication','Farmers near Lake Titicaca domesticate wild tubers and invent <i>chuño</i>, a freeze-dried potato that keeps for years.'],
+  ['1530s','Conquest','Spain meets the papa','Spanish conquistadors encounter potatoes in the Inca Empire; by the 1570s they’re grown in Spain.'],
+  ['1719','North America','A New World return','Scots-Irish settlers in Londonderry, New Hampshire, plant one of the first permanent potato patches in North America.'],
+  ['1770s','France','Parmentier’s PR stunt','Antoine-Augustin Parmentier wins France over with potato dinners and a famously “guarded” field.'],
+  ['1845–1852','Ireland','The Great Famine','The blight <i>Phytophthora infestans</i> devastates a nation dependent on a single variety.'],
+  ['1995','Orbit','First veg in space','Potato plants are grown aboard Space Shuttle Columbia.'],
+  ['2008','United Nations','Year of the Potato','The UN declares the International Year of the Potato.'],
+  ['Today','Everywhere','A global staple','More than 150 countries grow potatoes; China and India produce about 40% of the crop.']
+];
+const COOK=[
+  ['🔥','Bake','Rub with oil and salt, prick, and bake straight on the rack until the skin crackles.',['400°F / 200°C','45–60 min','Russet'],'1518977676601-b53f82aba655'],
+  ['🍟','Fry','Cut into batons, soak, dry well, then double-fry for a shatter-crisp crust.',['325°F → 375°F','~10 min total','Kennebec'],'1630384060421-cb20d0e0649d'],
+  ['🥣','Mash','Start in cold salted water. Drain, steam dry, then add butter before the milk.',['Boil 15–20 min','Ricer > blender','Yukon Gold'],'1508313880080-c4bef0730395'],
+  ['🌿','Roast','Parboil, shake to rough up the edges, then roast in hot fat for craggy crunch.',['425°F / 220°C','40–50 min','Maris Piper'],'1594041680534-e8c8cdebd659'],
+  ['🍳','Hash','Grate, squeeze out every drop of water, and press into a hot, buttered pan.',['Medium-high','4–5 min / side','Russet'],'1623238913973-21e45cced554'],
+  ['💨','Steam','The gentlest method, and the one that keeps the most water-soluble vitamins.',['Over boiling water','20–25 min','Fingerling'],'1590165482129-1b8b27698780']
+];
+const PROD=[['China',95.6],['India',56.2],['Ukraine',20.9],['Russia',18.9],['USA',18.0],['Germany',10.7],['Bangladesh',10.1]];
+const DISHES=[['Poutine','Canada'],['Rösti','Switzerland'],['Tortilla española','Spain'],['Aloo paratha','India'],['Causa limeña','Peru'],['Colcannon','Ireland'],['Pierogi','Poland'],['Gnocchi','Italy'],['Latkes','Ashkenazi'],['Draniki','Belarus'],['Patatas bravas','Spain'],['Aligot','France'],['Papa a la Huancaína','Peru'],['Hasselback','Sweden']];
+const FACTS=[
+  ['Potatoes have been to space.','In 1995, potato plants grown on Space Shuttle Columbia made the potato the first food crop grown in space.'],
+  ['Sweet potatoes aren’t potatoes.','Sweet potatoes belong to the morning glory family (Convolvulaceae). The two are only distant cousins.'],
+  ['A potato is mostly water.','About 79% water by weight. The rest is mostly starch, with a little protein, fiber and minerals.'],
+  ['Royals wore potato flowers.','As the story goes, Louis XVI and Marie Antoinette wore potato blossoms to help Parmentier make the spud fashionable.'],
+  ['CIP keeps a potato bank.','In Lima, the International Potato Center’s genebank holds thousands of samples to protect genetic diversity.'],
+  ['Potato plants grow fruit.','Small green berries that look like cherry tomatoes. They’re poisonous, so don’t eat them.'],
+  ['Chips had a cranky origin, maybe.','Legend credits chef George Crum (1853). Historians doubt the story, and recipes predate it.'],
+  ['Every eye can become a plant.','Farmers plant “seed potatoes”: chunks cut so each has an eye. Every new plant is a clone of its parent.'],
+  ['Green potatoes are a warning sign.','The green itself is harmless chlorophyll, but it shows up alongside solanine. Peel it away.'],
+  ['Hats off to Peru.','Peru celebrates National Potato Day every May 30 and is home to some 3,000 native varieties.'],
+  ['They’re ancient tech.','Freeze-dried <i>chuño</i>, made by freezing, trampling and sun-drying potatoes, kept Andean armies fed.'],
+  ['Wine? No. Vodka? Yes.','Some vodkas are distilled from potato starch, a classic in Poland.']
+];
+const $=id=>document.getElementById(id);
+
+// World bars
+$('bars').innerHTML=PROD.map(p=>`<div class="hbar"><span>${p[0]}</span><div class="t"><div data-w="${p[1]/PROD[0][1]*100}"></div></div><b>${p[1]}</b></div>`).join('');
+$('dishes').textContent=DISHES.map(d=>`${d[0]} (${d[1]})`).join(', ');
+
+// Facts: three flip cards at a time
+let factPage=0;
+function renderFacts(){
+  const set=[0,1,2].map(k=>(factPage*3+k)%FACTS.length);
+  $('factsGrid').innerHTML=set.map(i=>`<button class="flip" aria-label="Flip fact ${i+1}"><span class="in"><span class="f"><span class="n">No. ${String(i+1).padStart(2,'0')}</span><span class="h">${FACTS[i][0]}</span><small>Tap to flip ↻</small></span><span class="b">${FACTS[i][1]}</span></span></button>`).join('');
+}
+$('factsGrid').addEventListener('click',e=>{const f=e.target.closest('.flip');if(f)f.classList.toggle('on')});
+$('nextFacts').addEventListener('click',()=>{factPage=(factPage+1)%4;renderFacts()});
+renderFacts();
+
+// Footer lists
+$('varList').innerHTML=VARS.map(v=>`<li><a href="#varieties"><i class="sw" style="background:${v.c};margin-right:6px"></i>${v.n}</a></li>`).join('');
+$('tlList').innerHTML=TL.map(t=>`<li><a href="#history-notes">${t[0]} · ${t[2]}</a></li>`).join('');
+$('tlText').innerHTML=TL.map(t=>`<b>${t[0]}</b> ${t[3]}`).join(' ');
+$('cookList').innerHTML=COOK.map(c=>`<li><a href="#cooking">${c[0]} ${c[1]}</a></li>`).join('');
+
+// Cooking carousel (v3 mechanics): the track shows [prev | current | next ...]
+const track=$('cookTrack'), dotsEl=$('cookDots'), play=dotsEl.querySelector('.play');
+const order=[COOK.length-1,...COOK.keys()].slice(0,COOK.length); // prev item first so "Bake" sits in the centre
+track.innerHTML=order.map(i=>{const c=COOK[i];return `<article class="tv-item" data-i="${i}">
+  <img src="https://images.unsplash.com/photo-${c[4]}?w=1600&q=80" alt="" loading="lazy">
+  <div class="shade"></div>
+  <div class="tv-logo">${c[0]} Six ways to glory · ${String(i+1).padStart(2,'0')}</div>
+  <h3 class="tv-title"><small>${c[3][0]}</small>${c[1]}.</h3>
+  <div class="tv-cta"><a class="btn" href="#cooking">${c[3][1]}</a><span><b>${c[3][2]}</b> · ${c[2]}</span></div>
+</article>`}).join('');
+COOK.forEach((c,k)=>play.insertAdjacentHTML('beforebegin',`<button class="d${k===0?' on':''}" role="tab" aria-label="Show ${c[1]}"></button>`));
+const dots=[...dotsEl.querySelectorAll('.d')];
+let cur=0,timer=null,busy=false;
+const mark=()=>dots.forEach((d,k)=>d.classList.toggle('on',k===cur));
+function step(){
+  if(busy)return;busy=true;track.classList.add('moving');
+  track.addEventListener('transitionend',()=>{track.classList.remove('moving');track.appendChild(track.firstElementChild);busy=false},{once:true});
+  cur=(cur+1)%COOK.length;mark();
+}
+function goTo(n){ // hop one slide at a time until the centre matches n
+  if(n===cur)return;const hop=()=>{if(cur===n)return;step();setTimeout(hop,950)};hop();
+}
+dots.forEach((d,k)=>d.addEventListener('click',()=>goTo(k)));
+const icon=p=>play.innerHTML=p?'<svg width="8" height="9" viewBox="0 0 8 9"><path d="M0 0h2.5v9H0zM5.5 0H8v9H5.5z" fill="currentColor"/></svg>':'<svg width="8" height="9" viewBox="0 0 8 9"><path d="M0 0 8 4.5 0 9Z" fill="currentColor"/></svg>';
+play.addEventListener('click',()=>{if(timer){clearInterval(timer);timer=null;icon(false);play.setAttribute('aria-label','Play carousel')}else{timer=setInterval(step,5000);icon(true);play.setAttribute('aria-label','Pause carousel')}});
+
+// Mobile footer accordion
+document.querySelectorAll('.directory h4').forEach(h=>h.addEventListener('click',()=>h.classList.toggle('open')));
+
+// Bars animate when visible; nav highlights the section in view (as in the original site)
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.querySelectorAll('[data-w]').forEach(b=>b.style.width=b.dataset.w+'%');io.unobserve(e.target)}}),{threshold:.12});
+io.observe($('bars'));
+const navLinks=[...document.querySelectorAll('.gnav .item a')];
+const so=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){navLinks.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id))}}),{rootMargin:'-45% 0px -50% 0px'});
+document.querySelectorAll('main [id]').forEach(s=>so.observe(s));
+</script>
+
+<!-- ============ 3D POTATO (verbatim from the original site) ============ -->
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+// ---- seeded RNG + 3D simplex noise ----
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const rand=mulberry32(1847);
+const grad3=new Float32Array([1,1,0,-1,1,0,1,-1,0,-1,-1,0,1,0,1,-1,0,1,1,0,-1,-1,0,-1,0,1,1,0,-1,1,0,1,-1,0,-1,-1]);
+const perm=new Uint8Array(512),pm12=new Uint8Array(512);
+{const p=new Uint8Array(256);for(let i=0;i<256;i++)p[i]=i;for(let i=255;i>0;i--){const j=Math.floor(rand()*(i+1));[p[i],p[j]]=[p[j],p[i]]}
+ for(let i=0;i<512;i++){perm[i]=p[i&255];pm12[i]=perm[i]%12}}
+const F3=1/3,G3=1/6;
+function noise3(x,y,z){
+  const s=(x+y+z)*F3,i=Math.floor(x+s),j=Math.floor(y+s),k=Math.floor(z+s),t=(i+j+k)*G3;
+  const x0=x-i+t,y0=y-j+t,z0=z-k+t;let i1,j1,k1,i2,j2,k2;
+  if(x0>=y0){if(y0>=z0){i1=1;j1=0;k1=0;i2=1;j2=1;k2=0}else if(x0>=z0){i1=1;j1=0;k1=0;i2=1;j2=0;k2=1}else{i1=0;j1=0;k1=1;i2=1;j2=0;k2=1}}
+  else{if(y0<z0){i1=0;j1=0;k1=1;i2=0;j2=1;k2=1}else if(x0<z0){i1=0;j1=1;k1=0;i2=0;j2=1;k2=1}else{i1=0;j1=1;k1=0;i2=1;j2=1;k2=0}}
+  const x1=x0-i1+G3,y1=y0-j1+G3,z1=z0-k1+G3,x2=x0-i2+2*G3,y2=y0-j2+2*G3,z2=z0-k2+2*G3,x3=x0-1+3*G3,y3=y0-1+3*G3,z3=z0-1+3*G3;
+  const ii=i&255,jj=j&255,kk=k&255;let n=0,tt,g;
+  tt=.6-x0*x0-y0*y0-z0*z0;if(tt>0){g=pm12[ii+perm[jj+perm[kk]]]*3;tt*=tt;n+=tt*tt*(grad3[g]*x0+grad3[g+1]*y0+grad3[g+2]*z0)}
+  tt=.6-x1*x1-y1*y1-z1*z1;if(tt>0){g=pm12[ii+i1+perm[jj+j1+perm[kk+k1]]]*3;tt*=tt;n+=tt*tt*(grad3[g]*x1+grad3[g+1]*y1+grad3[g+2]*z1)}
+  tt=.6-x2*x2-y2*y2-z2*z2;if(tt>0){g=pm12[ii+i2+perm[jj+j2+perm[kk+k2]]]*3;tt*=tt;n+=tt*tt*(grad3[g]*x2+grad3[g+1]*y2+grad3[g+2]*z2)}
+  tt=.6-x3*x3-y3*y3-z3*z3;if(tt>0){g=pm12[ii+1+perm[jj+1+perm[kk+1]]]*3;tt*=tt;n+=tt*tt*(grad3[g]*x3+grad3[g+1]*y3+grad3[g+2]*z3)}
+  return 32*n;
+}
+function fbm(x,y,z,o){let a=.5,f=1,s=0,n=0;for(let i=0;i<o;i++){s+=a*noise3(x*f,y*f,z*f);n+=a;a*=.5;f*=2.03}return s/n}
+
+// ---- eyes ----
+const EYES=[];
+for(let i=0;i<15;i++){const u=rand()*2-1,th=rand()*Math.PI*2,r=Math.sqrt(1-u*u);
+  EYES.push({x:r*Math.cos(th),y:u*.85,z:r*Math.sin(th),r:.07+rand()*.06})}
+EYES.forEach(e=>{const l=Math.hypot(e.x,e.y,e.z);e.x/=l;e.y/=l;e.z/=l;e.k=2/(e.r*e.r)});
+function eyeRidge(x,y,z){let m=0;for(const e of EYES){const d=1-(x*e.x+y*e.y+z*e.z);const t=d*e.k;if(t>=1&&t<3){const v=Math.sin((t-1)/2*Math.PI)*(1+.6*(x*e.y-y*e.x));if(v>m)m=v}}return m}
+function eyeAt(x,y,z){let m=0;for(const e of EYES){const d=1-(x*e.x+y*e.y+z*e.z);const t=d*e.k;if(t<1){const v=(1-t)*(1-t);if(v>m)m=v}}return m}
+
+function scuffAt(x,y,z){const n=noise3(x*3.2+40,y*3.2,z*3.2)+.18*noise3(x*24,y*24,z*24);return sm0(.52,.6,n)}
+function sm0(a,b,x){const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t)}
+// ---- renderer / scene ----
+const stage=document.getElementById('stage');
+const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
+renderer.outputColorSpace=THREE.SRGBColorSpace;
+renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+stage.appendChild(renderer.domElement);
+const scene=new THREE.Scene();
+const pmrem=new THREE.PMREMGenerator(renderer);
+scene.environment=pmrem.fromScene(new RoomEnvironment(),.04).texture;
+scene.environmentIntensity=.6;
+
+const camera=new THREE.PerspectiveCamera(30,1,.1,100);
+const HOME=new THREE.Vector3(0,1.1,6.2);
+camera.position.copy(HOME);
+const controls=new OrbitControls(camera,renderer.domElement);
+controls.enableDamping=true;controls.dampingFactor=.07;controls.enablePan=false;controls.enableZoom=false;
+controls.autoRotate=true;controls.autoRotateSpeed=1.4;controls.minDistance=3.2;controls.maxDistance=9;
+controls.rotateSpeed=.8;
+
+const key=new THREE.DirectionalLight(0xfff0d8,2.6);key.position.set(3,6,4);key.castShadow=true;
+key.shadow.mapSize.set(2048,2048);Object.assign(key.shadow.camera,{left:-3,right:3,top:3,bottom:-3,near:1,far:20});
+key.shadow.radius=8;key.shadow.bias=-.0004;key.shadow.normalBias=.02;scene.add(key);
+const rim=new THREE.DirectionalLight(0xffc98a,1.8);rim.position.set(-5,2.5,-4);scene.add(rim);
+const fill=new THREE.DirectionalLight(0xdfe8ff,.5);fill.position.set(-4,1,5);scene.add(fill);
+scene.add(new THREE.HemisphereLight(0xfff6e6,0x6b4a2c,.45));
+
+const ground=new THREE.Mesh(new THREE.PlaneGeometry(14,14),new THREE.ShadowMaterial({opacity:.2}));
+ground.rotation.x=-Math.PI/2;ground.position.y=-1.08;ground.receiveShadow=true;scene.add(ground);
+
+// ---- build geometry ----
+function buildGeometry(){
+  const geo=new THREE.SphereGeometry(1,384,256);
+  const pos=geo.attributes.position,v=new THREE.Vector3();
+  for(let i=0;i<pos.count;i++){
+    v.fromBufferAttribute(pos,i).normalize();
+    const {x,y,z}=v;
+    let r=1+.11*fbm(x*1.05+5.2,y*1.05,z*1.05,3)+.022*fbm(x*3.6,y*3.6+9,z*3.6,3)+.004*noise3(x*16,y*16,z*16);
+    const e=eyeAt(x,y,z); r-=.05*e; r+=.012*eyeRidge(x,y,z);
+    r-=.006*scuffAt(x,y,z);
+    let px=x*r*1.45,py=y*r*.92,pz=z*r*1.02;
+    py-=.09*px*px-.08; // gentle kidney bend
+    pz+=.05*Math.sin(px*1.6);
+    pos.setXYZ(i,px,py,pz);
+  }
+  geo.computeVertexNormals();
+  // weld normals across UV seam & poles
+  const nrm=geo.attributes.normal,map=new Map();
+  for(let i=0;i<pos.count;i++){const k=`${pos.getX(i).toFixed(4)},${pos.getY(i).toFixed(4)},${pos.getZ(i).toFixed(4)}`;
+    let a=map.get(k);if(!a){a=[0,0,0,[]];map.set(k,a)}a[0]+=nrm.getX(i);a[1]+=nrm.getY(i);a[2]+=nrm.getZ(i);a[3].push(i)}
+  for(const a of map.values()){if(a[3].length<2)continue;const l=Math.hypot(a[0],a[1],a[2])||1;for(const i of a[3])nrm.setXYZ(i,a[0]/l,a[1]/l,a[2]/l)}
+  geo.center();
+  return geo;
+}
+
+// ---- texture fields (sampled on the sphere so they're seamless) ----
+const W=2048,H=1024,N=W*H;
+const fC=new Float32Array(N),fA=new Float32Array(N),fS=new Float32Array(N),fF=new Float32Array(N),fN=new Float32Array(N),fD=new Float32Array(N),fE=new Float32Array(N);
+function buildFields(){
+  for(let py=0;py<H;py++){
+    const th=(py+.5)/H*Math.PI,st=Math.sin(th),ct=Math.cos(th);
+    for(let px=0;px<W;px++){
+      const ph=(px+.5)/W*Math.PI*2,x=-Math.cos(ph)*st,y=ct,z=Math.sin(ph)*st,i=py*W+px;
+      fA[i]=fbm(x*2.6,y*2.6,z*2.6,4);
+      fS[i]=noise3(x*55,y*55,z*55);
+      fF[i]=fbm(x*22+3,y*22,z*22,2);
+      fN[i]=1-Math.abs(noise3(x*26,y*26+4,z*26));
+      fD[i]=fbm(x*2+11,y*2,z*2,2);
+      fE[i]=eyeAt(x,y,z);
+      fC[i]=scuffAt(x,y,z);
+    }
+  }
+}
+function buildNormalMap(){
+  const c=document.createElement('canvas');c.width=W;c.height=H;const ctx=c.getContext('2d'),img=ctx.createImageData(W,H),d=img.data;
+  const h=new Float32Array(N);
+  for(let i=0;i<N;i++){h[i]=(fF[i]*.5+Math.max(0,fS[i]-.55)*1.4-Math.pow(fN[i],10)*.25)*(1-fC[i]*.7)-fE[i]*.9-fC[i]*.35}
+  for(let y=0;y<H;y++){const st=Math.max(.15,Math.sin((y+.5)/H*Math.PI));
+    for(let x=0;x<W;x++){
+      const xl=(x-1+W)%W,xr=(x+1)%W,yu=Math.max(0,y-1),yd=Math.min(H-1,y+1);
+      let nx=-(h[y*W+xr]-h[y*W+xl])*7/st,ny=(h[yd*W+x]-h[yu*W+x])*7,nz=1;const l=Math.hypot(nx,ny,nz);
+      const o=(y*W+x)*4;d[o]=(nx/l*.5+.5)*255;d[o+1]=(ny/l*.5+.5)*255;d[o+2]=(nz/l*.5+.5)*255;d[o+3]=255}}
+  ctx.putImageData(img,0,0);
+  const t=new THREE.CanvasTexture(c);t.wrapS=THREE.RepeatWrapping;t.anisotropy=renderer.capabilities.getMaxAnisotropy();t.colorSpace=THREE.NoColorSpace;return t;
+}
+const PAL={
+  russet:{c1:[176,132,86],c2:[128,90,55],sp:[96,66,40],eye:[70,46,28],fl:[236,214,160],net:1,dirt:.55,rough:.92,note:'Russet — netted, earthy, built for baking.'},
+  gold:  {c1:[228,196,128],c2:[200,164,98],sp:[168,128,74],eye:[120,86,48],fl:[244,218,140],net:.12,dirt:.35,rough:.8,note:'Yukon Gold — thin-skinned, buttery, does it all.'},
+  red:   {c1:[168,62,54],c2:[118,38,36],sp:[214,160,132],eye:[86,30,28],fl:[240,228,196],net:0,dirt:.3,rough:.62,note:'Red — glossy skin, waxy flesh, salad royalty.'},
+  purple:{c1:[82,44,88],c2:[44,22,50],sp:[140,110,142],eye:[34,16,38],fl:[120,60,140],net:0,dirt:.25,rough:.6,note:'Purple Peruvian — anthocyanin-rich, violet to the core.'}
+};
+const colorCanvas=document.createElement('canvas');colorCanvas.width=W;colorCanvas.height=H;
+const colorTex=new THREE.CanvasTexture(colorCanvas);colorTex.colorSpace=THREE.SRGBColorSpace;colorTex.wrapS=THREE.RepeatWrapping;
+colorTex.anisotropy=renderer.capabilities.getMaxAnisotropy();
+const lerp=(a,b,t)=>a+(b-a)*t, sm=(a,b,x)=>{const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t)};
+const DIRT=[92,66,42];
+function paint(p){
+  const ctx=colorCanvas.getContext('2d'),img=ctx.createImageData(W,H),d=img.data;
+  for(let i=0;i<N;i++){
+    const t=sm(-.45,.45,fA[i]);
+    let r=lerp(p.c1[0],p.c2[0],t),g=lerp(p.c1[1],p.c2[1],t),b=lerp(p.c1[2],p.c2[2],t);
+    const net=Math.pow(fN[i],7)*p.net*.55;r=lerp(r,p.c2[0]*.75,net);g=lerp(g,p.c2[1]*.75,net);b=lerp(b,p.c2[2]*.75,net);
+    if(fS[i]>.5){const k=Math.min(1,(fS[i]-.5)*4)*.75;r=lerp(r,p.sp[0],k);g=lerp(g,p.sp[1],k);b=lerp(b,p.sp[2],k)}
+    const dk=sm(.08,.5,fD[i])*p.dirt;r=lerp(r,DIRT[0],dk);g=lerp(g,DIRT[1],dk);b=lerp(b,DIRT[2],dk);
+    const fine=.9+.2*(fF[i]*.5+.5);r*=fine;g*=fine;b*=fine;
+    const sc=fC[i]*.85;if(sc>0){const fv=.94+.1*(fS[i]*.5+.5);r=lerp(r,p.fl[0]*fv,sc);g=lerp(g,p.fl[1]*fv,sc);b=lerp(b,p.fl[2]*fv,sc)}
+    const e=Math.min(1,fE[i]*1.3)*.85;r=lerp(r,p.eye[0],e);g=lerp(g,p.eye[1],e);b=lerp(b,p.eye[2],e);
+    const o=i*4;d[o]=r;d[o+1]=g;d[o+2]=b;d[o+3]=255;
+  }
+  ctx.putImageData(img,0,0);colorTex.needsUpdate=true;
+}
+
+let potato,mat;
+function init(){
+  buildFields();
+  const nmap=buildNormalMap();
+  paint(PAL.russet);
+  // roughness map (G channel): dirt is matte, scuffed flesh is moist & glossier
+  const rc=document.createElement('canvas');rc.width=W;rc.height=H;const rctx=rc.getContext('2d'),rimg=rctx.createImageData(W,H),rd=rimg.data;
+  for(let i=0;i<N;i++){const v=Math.min(1,Math.max(.25,.86+.12*sm(.08,.5,fD[i])+.1*fE[i]-.5*fC[i]+.06*fF[i]))*255;const o=i*4;rd[o]=rd[o+1]=rd[o+2]=v;rd[o+3]=255}
+  rctx.putImageData(rimg,0,0);const rtex=new THREE.CanvasTexture(rc);rtex.wrapS=THREE.RepeatWrapping;rtex.colorSpace=THREE.NoColorSpace;
+  mat=new THREE.MeshPhysicalMaterial({map:colorTex,normalMap:nmap,normalScale:new THREE.Vector2(1.1,1.1),roughnessMap:rtex,roughness:1,metalness:0,
+    sheen:.4,sheenRoughness:.75,sheenColor:new THREE.Color(0xffdcae),specularIntensity:.6});
+  potato=new THREE.Mesh(buildGeometry(),mat);
+  // GPU micro-detail: object-space 3D noise perturbs normals per pixel (resolution-independent skin pores & wrinkles)
+  mat.onBeforeCompile=sh=>{
+    sh.uniforms.uNM={value:potato.normalMatrix};
+    sh.uniforms.uMicro={value:.5};
+    sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vObjPos;')
+      .replace('#include <begin_vertex>','#include <begin_vertex>\nvObjPos=position;');
+    sh.fragmentShader=sh.fragmentShader.replace('#include <common>',`#include <common>
+varying vec3 vObjPos;uniform mat3 uNM;uniform float uMicro;
+vec3 m289(vec3 x){return x-floor(x*(1./289.))*289.;}vec4 m289(vec4 x){return x-floor(x*(1./289.))*289.;}
+vec4 prm(vec4 x){return m289(((x*34.)+1.)*x);}vec4 tis(vec4 r){return 1.79284291400159-.85373472095314*r;}
+float snoise(vec3 v){const vec2 C=vec2(1./6.,1./3.);const vec4 D=vec4(0.,.5,1.,2.);
+vec3 i=floor(v+dot(v,C.yyy));vec3 x0=v-i+dot(i,C.xxx);vec3 g=step(x0.yzx,x0.xyz);vec3 l=1.-g;vec3 i1=min(g.xyz,l.zxy);vec3 i2=max(g.xyz,l.zxy);
+vec3 x1=x0-i1+C.xxx;vec3 x2=x0-i2+C.yyy;vec3 x3=x0-D.yyy;i=m289(i);
+vec4 p=prm(prm(prm(i.z+vec4(0.,i1.z,i2.z,1.))+i.y+vec4(0.,i1.y,i2.y,1.))+i.x+vec4(0.,i1.x,i2.x,1.));
+float n_=.142857142857;vec3 ns=n_*D.wyz-D.xzx;vec4 j=p-49.*floor(p*ns.z*ns.z);vec4 x_=floor(j*ns.z);vec4 y_=floor(j-7.*x_);
+vec4 x=x_*ns.x+ns.yyyy;vec4 y=y_*ns.x+ns.yyyy;vec4 h=1.-abs(x)-abs(y);vec4 b0=vec4(x.xy,y.xy);vec4 b1=vec4(x.zw,y.zw);
+vec4 s0=floor(b0)*2.+1.;vec4 s1=floor(b1)*2.+1.;vec4 sh=-step(h,vec4(0.));vec4 a0=b0.xzyw+s0.xzyw*sh.xxyy;vec4 a1=b1.xzyw+s1.xzyw*sh.zzww;
+vec3 p0=vec3(a0.xy,h.x);vec3 p1=vec3(a0.zw,h.y);vec3 p2=vec3(a1.xy,h.z);vec3 p3=vec3(a1.zw,h.w);
+vec4 nm=tis(vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3)));p0*=nm.x;p1*=nm.y;p2*=nm.z;p3*=nm.w;
+vec4 m=max(.6-vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)),0.);m=m*m;
+return 42.*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));}
+float microH(vec3 p){return snoise(p*38.)*.6+snoise(p*95.)*.3+abs(snoise(p*14.))*.5;}
+vec3 microGrad(vec3 p){const float e=.0025;float h0=microH(p);
+return vec3(microH(p+vec3(e,0,0))-h0,microH(p+vec3(0,e,0))-h0,microH(p+vec3(0,0,e))-h0)/e*.01;}`)
+    .replace('#include <normal_fragment_maps>',`#include <normal_fragment_maps>
+{vec3 gv=uNM*microGrad(vObjPos);normal=normalize(normal-uMicro*(gv-dot(gv,normal)*normal));}`);
+  };
+  potato.castShadow=true;potato.rotation.set(.15,.4,-.08);
+  scene.add(potato);
+  document.getElementById('loader').classList.add('done');
+}
+
+// ---- resize / loop ----
+function resize(){const w=stage.clientWidth,h=stage.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;
+  camera.fov=w<520?38:30;camera.updateProjectionMatrix()}
+new ResizeObserver(resize).observe(stage);resize();
+
+let visible=true;
+new IntersectionObserver(e=>{visible=e[0].isIntersecting}).observe(stage);
+const deg=document.getElementById('deg'),arc=document.getElementById('dialArc'),C=238.76;
+const clock=new THREE.Clock();
+renderer.setAnimationLoop(()=>{
+  if(!visible)return;
+  const t=clock.getElapsedTime();
+  if(potato){potato.position.y=Math.sin(t*1.1)*.05;}
+  controls.update();
+  let a=THREE.MathUtils.radToDeg(controls.getAzimuthalAngle());a=(a+360)%360;
+  deg.textContent=Math.round(a)+'°';arc.style.strokeDashoffset=C*(1-a/360);
+  renderer.render(scene,camera);
+});
+
+// ---- UI ----
+const spinBtn=document.getElementById('spinBtn');
+spinBtn.onclick=()=>{controls.autoRotate=!controls.autoRotate;spinBtn.classList.toggle('on',controls.autoRotate)};
+let resumeT;
+controls.addEventListener('start',()=>{clearTimeout(resumeT)});
+controls.addEventListener('end',()=>{if(spinBtn.classList.contains('on')){controls.autoRotate=false;resumeT=setTimeout(()=>controls.autoRotate=true,2500)}});
+function dolly(f){const d=camera.position.clone().sub(controls.target);const L=THREE.MathUtils.clamp(d.length()*f,controls.minDistance,controls.maxDistance);d.setLength(L);
+  const start=camera.position.clone(),end=controls.target.clone().add(d);let k=0;(function step(){k+=.08;camera.position.lerpVectors(start,end,Math.min(1,k*(2-k)));if(k<1)requestAnimationFrame(step)})()}
+document.getElementById('zin').onclick=()=>dolly(.8);
+document.getElementById('zout').onclick=()=>dolly(1.25);
+document.getElementById('resetBtn').onclick=()=>{const s=camera.position.clone();let k=0;(function step(){k+=.04;camera.position.lerpVectors(s,HOME,1-Math.pow(1-Math.min(k,1),3));if(k<1)requestAnimationFrame(step)})()};
+const vnote=document.getElementById('vnote');
+document.getElementById('varPick').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!mat)return;
+  document.querySelectorAll('#varPick button').forEach(x=>x.classList.toggle('on',x===b));
+  const p=PAL[b.dataset.v];paint(p);mat.roughness=p.rough/0.92;
+  vnote.style.opacity=0;setTimeout(()=>{vnote.textContent=p.note;vnote.style.opacity=1},200);
+  // little hop
+  if(potato){const s0=performance.now();(function hop(){const k=(performance.now()-s0)/450;if(k>1){potato.scale.setScalar(1);return}potato.scale.setScalar(1+Math.sin(k*Math.PI)*.06);requestAnimationFrame(hop)})()}
+});
+
+requestAnimationFrame(()=>setTimeout(init,50));
+</script>
+
+</body>
+</html>
